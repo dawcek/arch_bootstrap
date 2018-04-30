@@ -1,0 +1,23 @@
+#!/bin/bash
+wifi-menu
+useradd -m -G wheel,users -s /bin/bash dawid
+passwd dawid
+visudo
+pacman-db-upgrade && pacman-optimize && sync
+pacman -Syyu
+pacman -S xorg-server xorg-apps xorg-xinit xorg-xfontsel xf86-input-synaptics xf86-video-intel xbindkeys
+pacman -S ttf-dejavu ttf-liberation opendesktop-fonts
+pacman -S  i3 dmenu compton rxvt-unicode rxvt-unicode-terminfo urxvt-perls scrot feh xautolock
+pacman -S networkmanager network-manager-applet gnome-keyring pulseaudio pulseaudio-alsa alsa-utils pavucontrol wget openvpn easy-rsa
+pacman -S firefox firefox-i18n-pl
+pacman -S tlp tlp-rdw
+systemctl enable NetworkManager.service
+systemctl enable fstrim.timer
+systemctl enable tlp.service
+tlp start
+gpasswd -a dawid audio
+gpasswd -a dawid optical
+gpasswd -a dawid power
+gpasswd -a dawid storage
+echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
+

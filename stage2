@@ -1,0 +1,7 @@
+#!/bin/bash
+sudo pacman -S exfat-utils fuse-exfat a52dec faac faad2 flac jasper lame libdca libdv gst-libav libmad libmpeg2 libtheora libvorbis libxv wavpack x264 xvidcore gstreamer flashplugin libdvdcss libdvdread libdvdnav dvd+rw-tools dvdauthor dvgrab vlc imagemagick gst-plugins-{bad,base,good,ugly}
+sudo pacman -S p7zip unrar tar rsync zip unzip cpio duplicity bzip2 gzip unarj unace file-roller
+sudo pacman -S arc-gtk-theme papirus-icon-theme pcmanfm-gtk3 gvfs dunst udiskie gnome-calculator mupdf lxappearance
+sudo pacman -S ranger libcaca highlight atool w3m mediainfo
+ranger --copy-config=all
+sudo pacman -S dosfstools mtools ntfs-3g pwgen tmux htop neovim python-neovim python2-neovim xclip xsel calcurse newsboat
