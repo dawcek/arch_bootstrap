@@ -162,6 +162,7 @@ EOF
         fi
     fi
     rm -f ${ckeyfile}
+    umount /usb
 }
 
 # vim: set ft=sh ts=4 sw=4 et:
