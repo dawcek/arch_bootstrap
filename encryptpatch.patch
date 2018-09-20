@@ -1,0 +1,70 @@
+--- encrypt	2018-09-20 08:56:34.320000000 +0200
++++ encrypt2	2018-09-20 08:56:49.690000000 +0200
+@@ -3,7 +3,29 @@
+ run_hook() {
+     modprobe -a -q dm-crypt >/dev/null 2>&1
+     [ "${quiet}" = "y" ] && CSQUIET=">/dev/null"
+-
++    USBTIMER=0
++    ISUSBPRESENT=1
++    while [ ! -L '/dev/disk/by-id/usb-VBOX_HARDDISK-0:0-part1' ]; do
++	echo 'Waiting for USB'
++        USBTIMER=$((USBTIMER + 1))
++	echo "Attempts $USBTIMER from 30"
++	sleep 1
++	if [ $USBTIMER -eq 30 ]
++	then
++		ISUSBPRESENT=0
++		# break #turn on while loop
++		echo "System will shutdown in 5 seconds..."
++		sleep 5
++		poweroff -h
++	fi
++    done
++    if [ $ISUSBPRESENT -eq 1 ]
++    then
++	mkdir -p /usb
++    	mount /dev/disk/by-id/usb-VBOX_HARDDISK-0:0-part1 /usb
++    else
++	echo "USB stick is not connected"
++    fi
+     # Get keyfile if specified
+     ckeyfile="/crypto_keyfile.bin"
+     if [ -n "$cryptkey" ]; then
+@@ -54,12 +76,17 @@
+         echo "The syntax 'root=${root}' where '${root}' is an encrypted volume is deprecated"
+         echo "Use 'cryptdevice=${root}:root root=/dev/mapper/root' instead."
+     }
+-
++    local headerFlag=false
+     for cryptopt in ${cryptoptions//,/ }; do
+         case ${cryptopt} in
+             allow-discards)
+                 cryptargs="${cryptargs} --allow-discards"
+                 ;;
++	    header)
++		cryptargs="${cryptargs} --header /usb/header.img"
++		headerFlag=true
++		;;
++
+             *)
+                 echo "Encryption option '${cryptopt}' not known, ignoring." >&2
+                 ;;
+@@ -67,7 +94,7 @@
+     done
+ 
+     if resolved=$(resolve_device "${cryptdev}" ${rootdelay}); then
+-        if cryptsetup isLuks ${resolved} >/dev/null 2>&1; then
++        if $headerFlag || cryptsetup isLuks ${resolved} >/dev/null 2>&1; then
+             [ ${DEPRECATED_CRYPT} -eq 1 ] && warn_deprecated
+             dopassphrase=1
+             # If keyfile exists, try to use that
+@@ -139,6 +166,8 @@
+         fi
+     fi
+     rm -f ${ckeyfile}
++    umount /usb
++
+ }
+ 
+ # vim: set ft=sh ts=4 sw=4 et:
